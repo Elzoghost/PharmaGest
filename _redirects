@@ -1,0 +1,6 @@
+# Redirections Netlify
+/app    /app/index.html   200
+/admin  /admin/index.html 200
+
+# Toute URL inconnue → landing page
+/*      /index.html       200

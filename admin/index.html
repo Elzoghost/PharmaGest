@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaGest — Super Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --jade:#0B3D2E;--forest:#1A7A58;--emerald:#22A876;--mint:#A8D5C2;
+  --gold:#C9A84C;--cream:#FAF7F2;--dark:#070F0C;--white:#fff;
+  --text:#1C2B24;--muted:#6B8C7E;--border:#D4E8DF;--r:12px;
+  --red:#C0392B;--orange:#E9A820;--green:#059669;
+  --sh:0 2px 12px rgba(11,61,46,.07);
+  --shm:0 8px 30px rgba(11,61,46,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Syne',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+
+/* LOGIN */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--jade),#0A2E1F);padding:20px}
+.login-box{background:var(--white);border-radius:20px;padding:40px;width:100%;max-width:380px;box-shadow:0 30px 60px rgba(0,0,0,.25)}
+.login-logo{font-family:'Fraunces',serif;font-size:1.5rem;color:var(--jade);text-align:center;margin-bottom:6px}
+.login-sub{font-size:.8rem;color:var(--muted);text-align:center;margin-bottom:28px}
+.login-box label{display:block;font-size:.75rem;font-weight:700;color:var(--jade);margin-bottom:5px;margin-top:14px}
+.login-box input{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Syne',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s}
+.login-box input:focus{border-color:var(--jade)}
+.login-btn{width:100%;margin-top:20px;padding:12px;background:var(--jade);color:#fff;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s}
+.login-btn:hover{background:var(--forest)}
+.login-err{color:var(--red);font-size:.78rem;text-align:center;margin-top:10px;min-height:18px}
+
+/* LAYOUT */
+.app{display:none;min-height:100vh}
+.app.visible{display:flex;flex-direction:column}
+.topbar{background:var(--jade);color:#fff;padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-left{font-family:'Fraunces',serif;font-size:1.1rem;display:flex;align-items:center;gap:10px}
+.topbar-badge{background:rgba(255,255,255,.15);font-size:.65rem;padding:2px 8px;border-radius:99px;font-weight:700;letter-spacing:.08em}
+.topbar-right{display:flex;align-items:center;gap:14px;font-size:.8rem}
+.topbar-right span{opacity:.6}
+.logout-btn{background:rgba(255,255,255,.12);border:none;color:#fff;padding:5px 12px;border-radius:6px;font-family:'Syne',sans-serif;font-size:.75rem;cursor:pointer;transition:background .2s}
+.logout-btn:hover{background:rgba(255,255,255,.22)}
+.tabs{background:var(--white);border-bottom:2px solid var(--border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
+.tab{padding:14px 20px;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .2s}
+.tab.active{color:var(--jade);border-bottom-color:var(--jade)}
+.tab:hover:not(.active){color:var(--text)}
+.content{flex:1;padding:24px;max-width:1400px;margin:0 auto;width:100%}
+
+/* KPIs */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+.kpi-box{background:var(--white);border-radius:var(--r);padding:18px;box-shadow:var(--sh);border:1px solid var(--border);position:relative;overflow:hidden}
+.kpi-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-box.green::before{background:linear-gradient(90deg,var(--green),var(--emerald))}
+.kpi-box.gold::before{background:linear-gradient(90deg,var(--gold),#E8C56A)}
+.kpi-box.red::before{background:linear-gradient(90deg,var(--red),#E74C3C)}
+.kpi-box.blue::before{background:linear-gradient(90deg,#1A6B9A,#3498DB)}
+.kpi-box.jade::before{background:linear-gradient(90deg,var(--jade),var(--forest))}
+.kpi-lbl{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.kpi-val{font-family:'JetBrains Mono',monospace;font-size:1.7rem;font-weight:500;color:var(--jade);line-height:1}
+.kpi-val small{font-size:.75rem;font-weight:400;color:var(--muted);margin-left:2px}
+.kpi-sub{font-size:.7rem;color:var(--muted);margin-top:5px}
+
+/* TABLE */
+.card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);border:1px solid var(--border);overflow:hidden;margin-bottom:18px}
+.card-head{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.card-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--jade)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{background:var(--cream);padding:10px 16px;text-align:left;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+.tbl td{padding:12px 16px;font-size:.8rem;border-top:1px solid var(--border);vertical-align:middle}
+.tbl tr:hover td{background:rgba(11,61,46,.02)}
+.tbl-wrap{overflow-x:auto}
+
+/* BADGES */
+.bs{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:.68rem;font-weight:700}
+.bs-trial{background:rgba(201,168,76,.12);color:var(--gold)}
+.bs-active{background:rgba(5,150,105,.1);color:var(--green)}
+.bs-expired{background:rgba(192,57,43,.1);color:var(--red)}
+.bs-suspended{background:rgba(107,140,126,.1);color:var(--muted)}
+
+/* ACTIONS */
+.btn-act{padding:5px 11px;border-radius:6px;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-green{background:rgba(5,150,105,.1);color:var(--green)}
+.btn-green:hover{background:var(--green);color:#fff}
+.btn-red{background:rgba(192,57,43,.1);color:var(--red)}
+.btn-red:hover{background:var(--red);color:#fff}
+.btn-gold{background:rgba(201,168,76,.12);color:var(--gold)}
+.btn-gold:hover{background:var(--gold);color:#fff}
+.btn-primary{background:var(--jade);color:#fff;padding:8px 16px;border-radius:8px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-primary:hover{background:var(--forest)}
+
+/* SEARCH BAR */
+.sbar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.sbar input,.sbar select{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Syne',sans-serif;font-size:.8rem;outline:none;background:var(--white)}
+.sbar input:focus,.sbar select:focus{border-color:var(--jade)}
+.sbar input{min-width:220px}
+
+/* DETAIL PANEL */
+.detail-panel{position:fixed;right:0;top:0;bottom:0;width:400px;background:var(--white);box-shadow:-8px 0 30px rgba(0,0,0,.12);z-index:500;transform:translateX(100%);transition:transform .3s;overflow-y:auto}
+.detail-panel.open{transform:translateX(0)}
+.dp-hd{background:var(--jade);color:#fff;padding:20px 22px}
+.dp-hd h3{font-family:'Fraunces',serif;font-size:1.1rem}
+.dp-hd p{font-size:.78rem;opacity:.6;margin-top:3px}
+.dp-close{float:right;background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.9rem}
+.dp-body{padding:20px}
+.dp-section{margin-bottom:18px}
+.dp-sec-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+.dp-key{font-size:.75rem;color:var(--muted)}
+.dp-val{font-size:.78rem;font-weight:600;color:var(--text);text-align:right;max-width:220px}
+.dp-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.dp-btn{padding:10px;border-radius:8px;font-family:'Syne',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none;text-align:center;transition:all .2s}
+
+/* NOTIF TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--jade);color:#fff;padding:12px 20px;border-radius:10px;font-size:.82rem;font-weight:600;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* LOADING */
+.loading{text-align:center;padding:48px;color:var(--muted);font-size:.88rem}
+.spin{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--jade);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-logo">💊 PharmaGest</div>
+    <div class="login-sub">Super Administration</div>
+    <label>Identifiant admin</label>
+    <input id="adminLogin" type="text" placeholder="superadmin" value="superadmin">
+    <label>Mot de passe</label>
+    <input id="adminPwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Accéder au tableau de bord</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen" class="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      💊 PharmaGest <span class="topbar-badge">SUPER ADMIN</span>
+    </div>
+    <div class="topbar-right">
+      <span id="lastSync">—</span>
+      <button class="logout-btn" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('dashboard')">📊 Dashboard</div>
+    <div class="tab" onclick="showTab('pharmacies')">🏥 Pharmacies</div>
+    <div class="tab" onclick="showTab('abonnements')">💳 Abonnements</div>
+    <div class="tab" onclick="showTab('activite')">📈 Activité</div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard">
+      <div class="kpi-row">
+        <div class="kpi-box jade"><div class="kpi-lbl">Total pharmacies</div><div class="kpi-val" id="kTotal">—</div><div class="kpi-sub">Tous statuts</div></div>
+        <div class="kpi-box green"><div class="kpi-lbl">Abonnements actifs</div><div class="kpi-val" id="kActif">—</div><div class="kpi-sub">Payants</div></div>
+        <div class="kpi-box gold"><div class="kpi-lbl">En période d'essai</div><div class="kpi-val" id="kTrial">—</div><div class="kpi-sub">30j gratuits</div></div>
+        <div class="kpi-box red"><div class="kpi-lbl">Expirés / Suspendus</div><div class="kpi-val" id="kExp">—</div><div class="kpi-sub">À relancer</div></div>
+        <div class="kpi-box green"><div class="kpi-lbl">MRR estimé</div><div class="kpi-val" id="kMRR">—<small>FCFA</small></div><div class="kpi-sub">Revenu mensuel récurrent</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Inscriptions récentes</span><div style="display:flex;gap:8px">
+          <button class="btn-primary" onclick="refreshData()">🔄 Actualiser</button>
+          <button class="btn-primary" style="background:#C9A84C;color:#0B3D2E" onclick="lancerRelancesAuto()">📧 Relances auto</button>
+        </div></div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Pharmacie</th><th>Ville</th><th>Contact</th><th>Plan</th><th>Statut</th><th>Inscrit le</th><th>Actions</th></tr></thead><tbody id="tbRecent"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- PHARMACIES -->
+    <div id="tab-pharmacies" style="display:none">
+      <div class="sbar">
+        <input type="text" id="srchPh" placeholder="🔍 Nom, ville, contact…" oninput="renderPharmacies()">
+        <select id="filterStat" onchange="renderPharmacies()">
+          <option value="">Tous les statuts</option>
+          <option value="active">Actif</option>
+          <option value="trial">Essai</option>
+          <option value="expired">Expiré</option>
+          <option value="suspended">Suspendu</option>
+        </select>
+        <select id="filterPlan" onchange="renderPharmacies()">
+          <option value="">Tous les plans</option>
+          <option value="Starter">Starter</option>
+          <option value="Professionnel">Professionnel</option>
+          <option value="Entreprise">Entreprise</option>
+        </select>
+        <span id="phCount" style="font-size:.78rem;color:var(--muted);margin-left:4px"></span>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Pharmacie</th><th>Ville</th><th>Contact</th><th>Tél</th><th>Plan</th><th>Paiement</th><th>Statut</th><th>Fin essai</th><th>Actions</th></tr></thead><tbody id="tbPharma"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ABONNEMENTS -->
+    <div id="tab-abonnements" style="display:none">
+      <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi-box green"><div class="kpi-lbl">MRR</div><div class="kpi-val" id="aMRR">—<small>FCFA</small></div><div class="kpi-sub">Revenu mensuel récurrent</div></div>
+        <div class="kpi-box gold"><div class="kpi-lbl">ARR estimé</div><div class="kpi-val" id="aARR">—<small>FCFA</small></div><div class="kpi-sub">Revenu annuel récurrent</div></div>
+        <div class="kpi-box jade"><div class="kpi-lbl">Churn actuel</div><div class="kpi-val" id="aChurn">—<small>%</small></div><div class="kpi-sub">Taux de résiliation</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Répartition par plan</span></div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Plan</th><th>Prix/mois</th><th>Abonnés actifs</th><th>En essai</th><th>MRR</th></tr></thead>
+        <tbody id="tbPlans"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ACTIVITÉ -->
+    <div id="tab-activite" style="display:none">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Toutes les inscriptions</span></div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Pharmacie</th><th>Ville</th><th>Plan</th><th>Email</th><th>Tél</th><th>ID</th></tr></thead><tbody id="tbAll"></tbody></table></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detailPanel">
+  <div class="dp-hd">
+    <button class="dp-close" onclick="closeDetail()">✕</button>
+    <h3 id="dpName">—</h3>
+    <p id="dpSub">—</p>
+  </div>
+  <div class="dp-body" id="dpBody"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL='https://tmshposkrebpwhtuxfaf.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwbGl2em1maXd6dHNib3JmYnZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NTQyMTAsImV4cCI6MjA4NzQzMDIxMH0.JRQUIS3IKAKYr5MSZTaY7-kKPBalkHeZOWnmc-rObbA';
+const ADMIN_PWD='pharmagest@2026!';
+let DATA=[];
+
+// ── AUTH ──────────────────────────────────
+function doLogin(){
+  const l=document.getElementById('adminLogin').value;
+  const p=document.getElementById('adminPwd').value;
+  if(l==='superadmin'&&p===ADMIN_PWD){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appScreen').classList.add('visible');
+    refreshData();
+    setInterval(refreshData,60000);
+  }else{
+    document.getElementById('loginErr').textContent='Identifiants incorrects';
+    setTimeout(()=>document.getElementById('loginErr').textContent='',3000);
+  }
+}
+function logout(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('appScreen').classList.remove('visible');
+}
+
+// ── API ───────────────────────────────────
+async function apiFetch(qs=''){
+  const r=await fetch(SUPA_URL+'/rest/v1/pharmacies'+qs,{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+  });
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+async function apiPatch(id,data){
+  const r=await fetch(SUPA_URL+'/rest/v1/pharmacies?id=eq.'+id,{
+    method:'PATCH',
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+    body:JSON.stringify(data)
+  });
+  return r.ok;
+}
+
+// ── REFRESH ───────────────────────────────
+async function refreshData(){
+  try{
+    DATA=await apiFetch('?order=created_at.desc');
+    renderAll();
+    document.getElementById('lastSync').textContent='Sync '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){toast('Erreur chargement: '+e.message,'warn');}
+}
+
+function renderAll(){
+  renderDashboard();
+  renderPharmacies();
+  renderAbonnements();
+  renderActivite();
+  checkRelancesAuto();
+}
+
+// ── HELPERS ───────────────────────────────
+const PRIX={'Starter':15000,'Professionnel':29000,'Entreprise':55000};
+function fDate(d){if(!d)return'—';const dt=new Date(d);return dt.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function fNum(n){return Number(n||0).toLocaleString('fr-FR');}
+function getStatut(ph){
+  if(ph.statut==='active')return'active';
+  if(ph.statut==='suspended')return'suspended';
+  const now=new Date();
+  const te=ph.trial_end?new Date(ph.trial_end):null;
+  if(ph.statut==='trial')return te&&te<now?'expired':'trial';
+  return ph.statut||'trial';
+}
+function badgeStat(s){
+  const m={'active':'<span class="bs bs-active">● Actif</span>','trial':'<span class="bs bs-trial">⏳ Essai</span>','expired':'<span class="bs bs-expired">✗ Expiré</span>','suspended':'<span class="bs bs-suspended">⏸ Suspendu</span>'};
+  return m[s]||m.trial;
+}
+
+// ── DASHBOARD ────────────────────────────
+function renderDashboard(){
+  const actif=DATA.filter(p=>getStatut(p)==='active');
+  const trial=DATA.filter(p=>getStatut(p)==='trial');
+  const exp=DATA.filter(p=>['expired','suspended'].includes(getStatut(p)));
+  const mrr=actif.reduce((s,p)=>s+(PRIX[p.plan]||0),0);
+  document.getElementById('kTotal').textContent=DATA.length;
+  document.getElementById('kActif').textContent=actif.length;
+  document.getElementById('kTrial').textContent=trial.length;
+  document.getElementById('kExp').textContent=exp.length;
+  document.getElementById('kMRR').innerHTML=fNum(mrr)+'<small>FCFA</small>';
+
+  const recent=DATA.slice(0,10);
+  document.getElementById('tbRecent').innerHTML=recent.map(p=>rowPh(p,true)).join('');
+}
+
+// ── PHARMACIES ───────────────────────────
+function renderPharmacies(){
+  const q=(document.getElementById('srchPh')?.value||'').toLowerCase();
+  const fs=document.getElementById('filterStat')?.value||'';
+  const fp=document.getElementById('filterPlan')?.value||'';
+  let list=DATA;
+  if(q)list=list.filter(p=>(p.nom||'').toLowerCase().includes(q)||(p.ville||'').toLowerCase().includes(q)||(p.contact||'').toLowerCase().includes(q));
+  if(fs)list=list.filter(p=>getStatut(p)===fs);
+  if(fp)list=list.filter(p=>p.plan===fp);
+  document.getElementById('phCount').textContent=list.length+' résultat(s)';
+  document.getElementById('tbPharma').innerHTML=list.map(p=>rowPh(p,false)).join('');
+}
+
+function rowPh(p,short){
+  const stat=getStatut(p);
+  const tel=p.tel?`<a href="tel:${p.tel}" style="color:var(--jade)">${p.tel}</a>`:'—';
+  return `<tr>
+    <td><strong>${p.nom||'—'}</strong></td>
+    <td>${p.ville||'—'}</td>
+    <td>${p.contact||'—'}</td>
+    ${short?'':`<td>${tel}</td>`}
+    <td><span style="font-size:.75rem;font-weight:600;color:var(--jade)">${p.plan||'—'}</span></td>
+    ${short?'':`<td style="font-size:.75rem">${p.paiement||'—'}</td>`}
+    <td>${badgeStat(stat)}</td>
+    ${short?'':`<td style="font-size:.74rem;color:var(--muted)">${fDate(p.trial_end)}</td>`}
+    <td>
+      <button class="btn-act btn-green" onclick="openDetail('${p.id}')">👁</button>
+      ${stat==='trial'||stat==='expired'?`<button class="btn-act btn-gold" onclick="activerPh('${p.id}')">✅ Activer</button>`:''}
+      ${stat==='active'?`<button class="btn-act btn-red" onclick="suspPh('${p.id}')">⏸ Susp.</button>`:''}
+    </td>
+  </tr>`;
+}
+
+// ── ABONNEMENTS ──────────────────────────
+function renderAbonnements(){
+  const actif=DATA.filter(p=>getStatut(p)==='active');
+  const trial=DATA.filter(p=>getStatut(p)==='trial');
+  const mrr=actif.reduce((s,p)=>s+(PRIX[p.plan]||0),0);
+  const arr=mrr*12;
+  const churn=DATA.length>0?Math.round((DATA.filter(p=>getStatut(p)==='expired').length/Math.max(DATA.length,1))*100):0;
+  document.getElementById('aMRR').innerHTML=fNum(mrr)+'<small>FCFA</small>';
+  document.getElementById('aARR').innerHTML=fNum(arr)+'<small>FCFA</small>';
+  document.getElementById('aChurn').innerHTML=churn+'<small>%</small>';
+
+  const plans=['Starter','Professionnel','Entreprise'];
+  document.getElementById('tbPlans').innerHTML=plans.map(pl=>{
+    const a=actif.filter(p=>p.plan===pl).length;
+    const t=trial.filter(p=>p.plan===pl).length;
+    const mrr2=a*(PRIX[pl]||0);
+    return`<tr><td><strong>${pl}</strong></td><td style="font-family:monospace">${fNum(PRIX[pl])} FCFA</td><td>${a}</td><td>${t}</td><td style="font-family:monospace;color:var(--green)">${fNum(mrr2)} FCFA</td></tr>`;
+  }).join('');
+}
+
+// ── ACTIVITÉ ─────────────────────────────
+function renderActivite(){
+  document.getElementById('tbAll').innerHTML=DATA.map(p=>`
+    <tr>
+      <td style="font-size:.74rem;color:var(--muted)">${fDate(p.created_at)}</td>
+      <td><strong>${p.nom||'—'}</strong></td>
+      <td>${p.ville||'—'}</td>
+      <td>${p.plan||'—'}</td>
+      <td><a href="mailto:${p.email}" style="color:var(--jade);font-size:.75rem">${p.email||'—'}</a></td>
+      <td><a href="tel:${p.tel}" style="color:var(--jade);font-size:.75rem">${p.tel||'—'}</a></td>
+      <td style="font-family:monospace;font-size:.68rem;color:var(--muted)">${(p.id||'').substring(0,20)}…</td>
+    </tr>`).join('');
+}
+
+// ── ACTIONS ───────────────────────────────
+async function activerPh(id){
+  if(!confirm('Activer cet abonnement ?'))return;
+  const ok=await apiPatch(id,{statut:'active'});
+  if(ok){toast('Abonnement activé ✓');await refreshData();}
+  else toast('Erreur activation','warn');
+}
+async function suspPh(id){
+  if(!confirm('Suspendre cet abonnement ?'))return;
+  const ok=await apiPatch(id,{statut:'suspended'});
+  if(ok){toast('Suspendu');await refreshData();}
+  else toast('Erreur','warn');
+}
+
+// ── DETAIL PANEL ─────────────────────────
+function openDetail(id){
+  const p=DATA.find(x=>x.id===id);if(!p)return;
+  const stat=getStatut(p);
+  document.getElementById('dpName').textContent=p.nom||'—';
+  document.getElementById('dpSub').textContent=(p.ville||'')+(p.plan?' · Plan '+p.plan:'');
+  document.getElementById('dpBody').innerHTML=`
+    <div class="dp-section">
+      <div class="dp-sec-title">Informations</div>
+      <div class="dp-row"><span class="dp-key">Contact</span><span class="dp-val">${p.contact||'—'}</span></div>
+      <div class="dp-row"><span class="dp-key">Téléphone</span><span class="dp-val"><a href="tel:${p.tel}" style="color:var(--jade)">${p.tel||'—'}</a></span></div>
+      <div class="dp-row"><span class="dp-key">Email</span><span class="dp-val"><a href="mailto:${p.email}" style="color:var(--jade)">${p.email||'—'}</a></span></div>
+      <div class="dp-row"><span class="dp-key">Ville</span><span class="dp-val">${p.ville||'—'}</span></div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">Abonnement</div>
+      <div class="dp-row"><span class="dp-key">Plan</span><span class="dp-val">${p.plan||'—'}</span></div>
+      <div class="dp-row"><span class="dp-key">Statut</span><span class="dp-val">${badgeStat(stat)}</span></div>
+      <div class="dp-row"><span class="dp-key">Paiement</span><span class="dp-val">${p.paiement||'—'}</span></div>
+      <div class="dp-row"><span class="dp-key">Fin essai</span><span class="dp-val">${fDate(p.trial_end)}</span></div>
+      <div class="dp-row"><span class="dp-key">Inscrit le</span><span class="dp-val">${fDate(p.created_at)}</span></div>
+      <div class="dp-row"><span class="dp-key">MRR</span><span class="dp-val" style="color:var(--green)">${stat==='active'?fNum(PRIX[p.plan]||0)+' FCFA':'0 FCFA'}</span></div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">Actions</div>
+      <div class="dp-actions">
+        ${stat!=='active'?`<button class="dp-btn btn-green" onclick="activerPh('${p.id}')">✅ Activer l'abonnement</button>`:''}
+        ${stat==='active'?`<button class="dp-btn btn-red" onclick="suspPh('${p.id}')">⏸ Suspendre</button>`:''}
+        <a href="https://wa.me/${(p.tel||'').replace(/[^0-9]/g,'')}" target="_blank" class="dp-btn btn-gold" style="text-decoration:none;text-align:center">💬 Contacter sur WhatsApp</a>
+        ${getStatut(p)==='trial'?`<button class="dp-btn" onclick="relanceWA(${JSON.stringify(p).replace(/`/g,'')})" style="background:rgba(201,168,76,.1);color:#8B6914;font-weight:600">⏳ Relance fin d'essai WA</button>`:''}
+        <a href="mailto:${p.email}" class="dp-btn" style="background:rgba(11,61,46,.08);color:var(--jade);text-decoration:none;text-align:center">📧 Envoyer un email</a>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-sec-title">ID technique</div>
+      <div style="font-family:monospace;font-size:.72rem;color:var(--muted);word-break:break-all;background:var(--cream);padding:8px;border-radius:6px">${p.id}</div>
+    </div>`;
+  document.getElementById('detailPanel').classList.add('open');
+}
+function closeDetail(){document.getElementById('detailPanel').classList.remove('open');}
+
+// ── TABS ─────────────────────────────────
+function showTab(t){
+  ['dashboard','pharmacies','abonnements','activite'].forEach(id=>{
+    document.getElementById('tab-'+id).style.display=id===t?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('active',['dashboard','pharmacies','abonnements','activite'][i]===t);
+  });
+}
+
+// ── TOAST ────────────────────────────────
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+// ═══ RESEND EMAIL DEPUIS ADMIN ══════════════════════════
+const RESEND_API_KEY_ADMIN = ''; // ← Même clé Resend
+const ADMIN_TEL = '221770000000';
+
+async function sendEmailRelance(email, contact, nom, ph_id, plan, jours){
+  if(!RESEND_API_KEY_ADMIN) return false;
+  const PRIX = {'Starter':15000,'Professionnel':29000,'Entreprise':55000};
+  const prix = PRIX[plan]||29000;
+  try{
+    const r = await fetch('https://api.resend.com/emails',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+RESEND_API_KEY_ADMIN,'Content-Type':'application/json'},
+      body: JSON.stringify({
+        from: 'PharmaGest <noreply@pharmagest.sn>',
+        to: email,
+        subject: `⏳ Votre essai PharmaGest expire dans ${jours} jours`,
+        html: `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+  body{font-family:'Helvetica Neue',sans-serif;background:#FAF7F2;margin:0;padding:20px}
+  .wrap{max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+  .hd{background:linear-gradient(135deg,#C9A84C,#E8C56A);padding:28px;text-align:center}
+  .hd h1{color:#0B3D2E;font-size:1.3rem;margin:0 0 4px}
+  .hd p{color:#4A3010;font-size:.85rem;margin:0;opacity:.8}
+  .bd{padding:24px 28px}
+  .cta{display:block;background:#0B3D2E;color:#fff;text-decoration:none;padding:14px;border-radius:10px;font-weight:700;text-align:center;margin:18px 0}
+  .price{background:#FAF7F2;border-radius:10px;padding:14px;text-align:center;margin:12px 0}
+  .price strong{font-size:1.5rem;color:#0B3D2E}
+  .ft{background:#0B3D2E;color:#fff;padding:16px;text-align:center;font-size:.75rem;opacity:.75}
+</style></head><body>
+<div class="wrap">
+  <div class="hd"><h1>⏳ Votre essai expire dans ${jours} jour${jours>1?'s':''}</h1><p>Continuez à profiter de PharmaGest</p></div>
+  <div class="bd">
+    <p>Bonjour <strong>${contact}</strong>,</p>
+    <p>Votre essai gratuit de <strong>${nom}</strong> sur PharmaGest se termine dans <strong>${jours} jour${jours>1?'s':''}</strong>.</p>
+    <p>Pour continuer à utiliser PharmaGest sans interruption :</p>
+    <div class="price">
+      Plan <strong>${plan}</strong><br>
+      <strong>${Number(prix).toLocaleString('fr-FR')} FCFA</strong> / mois
+    </div>
+    <a href="https://wa.me/${ADMIN_TEL}?text=Renouvellement PharmaGest - ${encodeURIComponent(nom)} - ${ph_id}" class="cta">
+      💳 Renouveler mon abonnement
+    </a>
+    <p style="font-size:.8rem;color:#6B8C7E">
+      Paiement par Wave ou Orange Money. Notre équipe vous contactera dans les 2h.
+    </p>
+  </div>
+  <div class="ft">© 2026 PharmaGest 🇸🇳 · <a href="https://wa.me/${ADMIN_TEL}" style="color:#A8D5C2">Support WhatsApp</a></div>
+</div>
+</body></html>`
+      })
+    });
+    return r.ok;
+  } catch(e){ console.warn('Email relance error:', e.message); return false; }
+}
+
+// ═══ RELANCES AUTOMATIQUES ══════════════════════════════
+async function lancerRelancesAuto(){
+  const now = new Date();
+  const seuils = [7, 3, 1]; // Relance à J-7, J-3, J-1
+  let count = 0;
+  const results = [];
+
+  for(const ph of DATA){
+    if(ph.statut !== 'trial' || !ph.trial_end) continue;
+    const trialEnd = new Date(ph.trial_end);
+    const jours = Math.ceil((trialEnd - now) / (1000*60*60*24));
+
+    if(jours < 0 || jours > 7) continue; // Hors fenêtre
+
+    const dejaSent = localStorage.getItem('relance_'+ph.id+'_'+jours);
+    if(dejaSent) continue; // Déjà envoyée
+
+    // Envoyer relance
+    const ok = await sendEmailRelance(
+      ph.email, ph.contact||ph.nom, ph.nom,
+      ph.id, ph.plan, jours
+    );
+
+    if(ok || !RESEND_API_KEY_ADMIN){
+      localStorage.setItem('relance_'+ph.id+'_'+jours, '1');
+      count++;
+      results.push({nom:ph.nom, jours, email:ph.email});
+    }
+  }
+
+  // Afficher résumé
+  if(count > 0){
+    toast(`✅ ${count} relance(s) envoyée(s)`);
+    afficherResultatsRelance(results);
+  } else {
+    toast('Aucune relance à envoyer pour le moment');
+  }
+  return count;
+}
+
+function afficherResultatsRelance(results){
+  if(!results.length) return;
+  const div = document.createElement('div');
+  div.style.cssText = 'position:fixed;top:80px;right:20px;background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 8px 30px rgba(0,0,0,.15);z-index:900;max-width:320px;border:1px solid #D4E8DF';
+  div.innerHTML = `
+    <div style="font-weight:700;color:#0B3D2E;margin-bottom:10px">📧 Relances envoyées</div>
+    ${results.map(r=>`
+      <div style="font-size:.78rem;padding:6px 0;border-bottom:1px solid #F0EDE8;display:flex;justify-content:space-between">
+        <span>${r.nom}</span>
+        <span style="color:#C9A84C;font-weight:700">J-${r.jours}</span>
+      </div>`).join('')}
+    <button onclick="this.parentElement.remove()" style="margin-top:10px;width:100%;padding:7px;background:#F0EDE8;border:none;border-radius:6px;cursor:pointer;font-size:.78rem">Fermer</button>`;
+  document.body.appendChild(div);
+  setTimeout(()=>div.remove(), 10000);
+}
+
+// ═══ RELANCES WHATSAPP INDIVIDUELLES ═══════════════════
+function relanceWA(ph){
+  const trialEnd = ph.trial_end ? new Date(ph.trial_end) : null;
+  const jours = trialEnd ? Math.max(0, Math.ceil((trialEnd-new Date())/(1000*60*60*24))) : 0;
+  const PRIX = {'Starter':'15 000','Professionnel':'29 000','Entreprise':'55 000'};
+  const msg = `Bonjour ${ph.contact||ph.nom} 👋
+
+Votre essai PharmaGest pour *${ph.nom}* expire dans *${jours} jour${jours>1?'s':''}*.
+
+Pour continuer sans interruption, votre plan *${ph.plan||'Pro'}* est à *${PRIX[ph.plan]||'29 000'} FCFA/mois*.
+
+Répondez à ce message pour renouveler par Wave ou Orange Money 🙏
+
+_PharmaGest — Votre pharmacie connectée 🇸🇳_`;
+  const tel = (ph.tel||'').replace(/[^0-9]/g,'');
+  if(!tel){ toast('Numéro manquant','warn'); return; }
+  window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(msg),'_blank');
+}
+
+// ═══ VÉRIFICATION AU CHARGEMENT ════════════════════════
+function checkRelancesAuto(){
+  // Auto-vérifier à chaque ouverture de l'admin
+  const lastCheck = localStorage.getItem('pg_last_relance_check');
+  const now = Date.now();
+  // Vérifier max 1 fois par heure
+  if(lastCheck && now-Number(lastCheck) < 3600000) return;
+  localStorage.setItem('pg_last_relance_check', String(now));
+  // Lancer après le chargement des données
+  setTimeout(()=>{
+    const expireBientot = DATA.filter(p=>{
+      if(p.statut!=='trial'||!p.trial_end) return false;
+      const j = Math.ceil((new Date(p.trial_end)-new Date())/(1000*60*60*24));
+      return j>=0 && j<=7;
+    });
+    if(expireBientot.length > 0){
+      toast(`⚠️ ${expireBientot.length} essai(s) expirent dans 7 jours`);
+    }
+  }, 2000);
+}
+
+</script>
+</body>
+</html>

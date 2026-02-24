@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaGest - Logiciel de gestion pour pharmacies au Senegal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--jade:#0B3D2E;--jade2:#14553F;--forest:#1A7A58;--emerald:#22A876;--mint:#A8D5C2;--gold:#C9A84C;--gold2:#E8C56A;--cream:#FAF7F2;--dark:#070F0C;--text:#1C2B24;--muted:#6B8C7E;--border:#D4E8DF;--white:#FFF;--r:14px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--cream);overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:68px;padding:0 6%;display:flex;align-items:center;justify-content:space-between;background:rgba(250,247,242,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--jade);display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-ic{width:32px;height:32px;background:var(--jade);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff}
+.nav-links{display:flex;align-items:center;gap:24px}
+.nav-links a{color:var(--muted);font-size:.875rem;font-weight:500;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--jade)}
+.btn-nav{background:var(--jade)!important;color:#fff!important;padding:8px 18px!important;border-radius:8px!important;font-weight:600!important}
+.hero{min-height:100vh;padding:120px 6% 80px;display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center;position:relative;overflow:hidden}
+.hero-glow{position:absolute;right:-10%;top:5%;width:55vw;height:55vw;border-radius:50%;background:radial-gradient(circle,rgba(34,168,118,.07),transparent 65%);pointer-events:none}
+.tag{display:inline-flex;align-items:center;gap:7px;background:rgba(34,168,118,.09);border:1px solid rgba(34,168,118,.2);color:var(--forest);padding:5px 13px;border-radius:99px;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:18px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);display:inline-block;animation:dp 2s infinite}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,3.8vw,3.4rem);font-weight:900;line-height:1.1;color:var(--jade);margin-bottom:20px}
+.accent{color:var(--gold);font-style:italic}
+.hero-desc{font-size:1rem;color:var(--muted);line-height:1.72;margin-bottom:30px;max-width:460px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px}
+.btn-p{background:linear-gradient(135deg,var(--jade),var(--forest));color:#fff;padding:13px 26px;border-radius:10px;font-size:.9rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s;box-shadow:0 8px 22px rgba(11,61,46,.22)}
+.btn-p:hover{transform:translateY(-2px)}
+.btn-s{background:transparent;color:var(--jade);padding:13px 26px;border-radius:10px;font-size:.9rem;font-weight:600;text-decoration:none;border:2px solid var(--jade);display:inline-flex;align-items:center;gap:8px;transition:all .25s}
+.btn-s:hover{background:var(--jade);color:#fff}
+.proof{display:flex;align-items:center;gap:16px;font-size:.78rem;color:var(--muted);flex-wrap:wrap}
+.hcard{background:var(--white);border-radius:18px;padding:22px;box-shadow:0 20px 55px rgba(11,61,46,.11);border:1px solid var(--border);position:relative;overflow:hidden}
+.hcard::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--jade),var(--emerald),var(--gold))}
+.hcard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.hcard-ttl{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--jade)}
+.hcard-sync{font-size:.7rem;color:var(--muted);background:var(--cream);padding:3px 9px;border-radius:99px}
+.hkpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.hkpi{background:var(--cream);border-radius:9px;padding:10px;text-align:center}
+.hkpi-v{font-family:'DM Mono',monospace;font-size:.95rem;font-weight:700}
+.hkpi-l{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.hrows{display:flex;flex-direction:column;gap:7px}
+.hrow{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:var(--cream)}
+.hrow-ic{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.hrow-lbl{font-size:.77rem;font-weight:600;flex:1}
+.hrow-val{font-size:.72rem;color:var(--muted);font-family:'DM Mono',monospace}
+.bk{padding:2px 7px;border-radius:99px;font-size:.62rem;font-weight:700}
+.bk-ok{background:rgba(5,150,105,.1);color:#059669}
+.bk-warn{background:rgba(192,57,43,.1);color:#C0392B}
+.bk-gold{background:rgba(201,168,76,.1);color:var(--gold)}
+.logos-bar{background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px 6%;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
+.logos-lbl{font-size:.7rem;color:var(--muted);font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.pill{background:var(--cream);border:1px solid var(--border);border-radius:99px;padding:7px 16px;font-size:.8rem;font-weight:600;color:var(--muted)}
+.stats{background:var(--jade);padding:50px 6%;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+.stat-v{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:900;color:#fff;line-height:1}
+.stat-u{font-size:1.3rem;color:var(--emerald)}
+.stat-l{font-size:.78rem;color:rgba(255,255,255,.5);margin-top:6px}
+section{padding:80px 6%}
+.sec-badge{display:inline-block;background:rgba(11,61,46,.07);color:var(--jade);padding:4px 13px;border-radius:99px;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+h2{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,2.8vw,2.4rem);font-weight:900;color:var(--jade);line-height:1.18;margin-bottom:12px}
+.sec-sub{font-size:.95rem;color:var(--muted);line-height:1.72;max-width:500px}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+.feat{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:26px;transition:all .25s;position:relative;overflow:hidden}
+.feat:hover{transform:translateY(-4px);box-shadow:0 16px 38px rgba(11,61,46,.09);border-color:var(--mint)}
+.feat::after{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--jade),var(--emerald));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.feat:hover::after{transform:scaleX(1)}
+.feat-ic{width:46px;height:46px;background:rgba(11,61,46,.06);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;margin-bottom:14px}
+.feat h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--jade);margin-bottom:7px}
+.feat p{font-size:.82rem;color:var(--muted);line-height:1.65}
+.pricing-bg{background:var(--jade)}
+.pricing-bg h2{color:#fff}
+.pricing-bg .sec-badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.65)}
+.pricing-bg .sec-sub{color:rgba(255,255,255,.55)}
+.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+.plan{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--r);padding:30px;position:relative;transition:all .25s}
+.plan.pop{background:var(--white);border-color:var(--gold)}
+.pop-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--jade);padding:3px 13px;border-radius:99px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.plan-name{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:10px}
+.plan.pop .plan-name{color:var(--muted)}
+.plan-price{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#fff;line-height:1}
+.plan.pop .plan-price{color:var(--jade)}
+.plan-period{font-size:.78rem;color:rgba(255,255,255,.35);margin-bottom:18px;margin-top:3px}
+.plan.pop .plan-period{color:var(--muted)}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:8px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);margin-bottom:24px}
+.plan.pop .plan-feats{border-top-color:var(--border)}
+.pf{font-size:.82rem;color:rgba(255,255,255,.65);display:flex;align-items:flex-start;gap:7px}
+.plan.pop .pf{color:var(--text)}
+.pf::before{content:"\2713";color:var(--emerald);font-weight:700;flex-shrink:0}
+.plan-btn{display:block;text-align:center;padding:11px;border-radius:8px;font-weight:600;font-size:.86rem;cursor:pointer;transition:all .2s;border:none;width:100%;font-family:'DM Sans',sans-serif}
+.plan-btn-ol{border:1.5px solid rgba(255,255,255,.18);color:#fff;background:transparent}
+.plan-btn-ol:hover{background:rgba(255,255,255,.1)}
+.plan-btn-solid{background:var(--jade);color:#fff}
+.plan-btn-solid:hover{background:var(--jade2)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+.testi{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:26px}
+.stars{color:var(--gold);letter-spacing:2px;font-size:.8rem;margin-bottom:10px}
+.testi-q{font-size:.86rem;color:var(--text);line-height:1.7;margin-bottom:18px;font-style:italic}
+.testi-who{display:flex;align-items:center;gap:10px}
+.testi-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--jade),var(--emerald));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85rem;flex-shrink:0}
+.testi-name{font-size:.82rem;font-weight:700;color:var(--jade)}
+.testi-role{font-size:.7rem;color:var(--muted)}
+.cta-wrap{background:linear-gradient(135deg,var(--jade),#0A2E1F);padding:90px 6%;text-align:center}
+.cta-wrap h2{color:#fff;margin-bottom:12px}
+.cta-wrap p{color:rgba(255,255,255,.55);margin-bottom:32px}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--jade);padding:14px 30px;border-radius:10px;font-size:.92rem;font-weight:700;text-decoration:none;transition:all .25s}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-wa{background:rgba(255,255,255,.08);color:#fff;padding:14px 26px;border-radius:10px;font-size:.9rem;font-weight:600;text-decoration:none;border:1.5px solid rgba(255,255,255,.18)}
+footer{background:var(--dark);color:rgba(255,255,255,.45);padding:50px 6% 28px}
+.footer-g{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:36px;margin-bottom:36px}
+.footer-brand{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:#fff;margin-bottom:8px}
+.footer-desc{font-size:.8rem;line-height:1.7;max-width:240px}
+.f-title{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:12px}
+.f-links{list-style:none;display:flex;flex-direction:column;gap:8px}
+.f-links a{color:rgba(255,255,255,.45);text-decoration:none;font-size:.82rem}
+.f-links a:hover{color:#fff}
+.footer-bot{border-top:1px solid rgba(255,255,255,.07);padding-top:22px;display:flex;justify-content:space-between;font-size:.75rem;flex-wrap:wrap;gap:8px}
+.modal-ovl{position:fixed;inset:0;background:rgba(7,15,12,.75);backdrop-filter:blur(10px);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-ovl.open{display:flex}
+.modal-box{background:var(--white);border-radius:20px;width:100%;max-width:500px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.35);max-height:92vh;overflow-y:auto}
+.modal-hd{background:linear-gradient(135deg,var(--jade),var(--forest));padding:26px 28px;color:#fff;position:relative}
+.modal-hd h3{font-family:'Playfair Display',serif;font-size:1.35rem;margin-bottom:5px}
+.modal-hd p{font-size:.82rem;opacity:.65}
+.modal-close-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:.9rem}
+.modal-bd{padding:26px 28px}
+.f-row{margin-bottom:16px}
+.f-row label{display:block;font-size:.78rem;font-weight:600;color:var(--jade);margin-bottom:5px}
+.f-row input,.f-row select{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.86rem;outline:none;transition:border-color .2s;background:var(--cream)}
+.f-row input:focus{border-color:var(--jade)}
+.f-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.plan-radios{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:5px}
+.pr{position:relative}
+.pr input{position:absolute;opacity:0;pointer-events:none}
+.pr label{display:block;border:2px solid var(--border);border-radius:10px;padding:11px 8px;text-align:center;cursor:pointer;transition:all .2s;background:var(--cream)}
+.pr input:checked + label{border-color:var(--jade);background:rgba(11,61,46,.05)}
+.pr-name{font-size:.72rem;font-weight:700;color:var(--jade);display:block}
+.pr-price{font-family:'DM Mono',monospace;font-size:.82rem;font-weight:700;display:block;margin-top:2px}
+.pr-per{font-size:.62rem;color:var(--muted);display:block}
+.pay-row{display:flex;gap:8px;margin-top:6px}
+.pay-opt{flex:1;padding:9px;border:2px solid var(--border);border-radius:8px;background:var(--cream);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;transition:all .2s}
+.pay-opt.sel{border-color:var(--jade);background:rgba(11,61,46,.05);color:var(--jade)}
+.submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--jade),var(--forest));color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .25s;margin-top:4px}
+.submit-btn:disabled{opacity:.55;cursor:not-allowed}
+.f-note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6}
+.success{text-align:center;padding:16px 0}
+.success .ico{font-size:2.8rem;margin-bottom:12px}
+.success h4{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--jade);margin-bottom:8px}
+.success p{font-size:.85rem;color:var(--muted);line-height:1.7}
+.success code{background:var(--cream);padding:3px 9px;border-radius:5px;font-family:'DM Mono',monospace;font-size:.8rem}
+.fade{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s cubic-bezier(.22,.68,0,1.2)}
+.fade.in{opacity:1;transform:translateY(0)}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:100px}.hero-visual{display:none}.feat-grid,.plan-grid,.testi-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.footer-g{grid-template-columns:1fr 1fr}.nav-links{display:none}}
+@media(max-width:580px){.hero-btns,.cta-btns{flex-direction:column}.f-2,.plan-radios{grid-template-columns:1fr}.footer-g{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav id="navbar">
+  <a href="/" class="logo"><div class="logo-ic">+</div>PharmaGest</a>
+  <div class="nav-links">
+    <a href="#features">Fonctionnalit&#233;s</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#testi">T&#233;moignages</a>
+    <a href="https://wa.me/221770000000" target="_blank">Support</a>
+    <a href="./app/index.html">Se connecter</a>
+    <a href="#" class="btn-nav" onclick="showModal();return false">Essai gratuit</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div>
+    <div class="tag"><div class="dot"></div>&#127480;&#127475; Con&#231;u pour le S&#233;n&#233;gal</div>
+    <h1>G&#233;rez votre pharmacie<br>avec <span class="accent">intelligence</span></h1>
+    <p class="hero-desc">PharmaGest centralise vos stocks, votre caisse, vos ordonnances et cr&#233;dits patients dans une application s&#233;curis&#233;e, synchronis&#233;e en temps r&#233;el.</p>
+    <div class="hero-btns">
+      <a href="#" class="btn-p" onclick="showModal();return false">D&#233;marrer gratuit &#8212; 30 jours</a>
+      <a href="#features" class="btn-s">Voir les fonctionnalit&#233;s</a>
+    </div>
+    <div class="proof">
+      <span>&#10003; Sans carte bancaire</span>
+      <span>&#10003; Pr&#234;t en 5 minutes</span>
+      <span>&#10003; Support WhatsApp</span>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hcard">
+      <div class="hcard-top"><span class="hcard-ttl">Pharmacie Centrale</span><span class="hcard-sync">Sync il y a 30s</span></div>
+      <div class="hkpis">
+        <div class="hkpi"><div class="hkpi-v" style="color:#059669">842K</div><div class="hkpi-l">Recettes</div></div>
+        <div class="hkpi"><div class="hkpi-v" style="color:#C0392B">312K</div><div class="hkpi-l">D&#233;penses</div></div>
+        <div class="hkpi"><div class="hkpi-v" style="color:var(--gold)">530K</div><div class="hkpi-l">Solde</div></div>
+      </div>
+      <div class="hrows">
+        <div class="hrow"><div class="hrow-ic" style="background:rgba(5,150,105,.1)">+</div><div class="hrow-lbl">Parac&#233;tamol 500mg</div><div class="hrow-val">45 bo&#238;tes</div><span class="bk bk-ok">OK</span></div>
+        <div class="hrow"><div class="hrow-ic" style="background:rgba(192,57,43,.1)">!</div><div class="hrow-lbl">Amoxicilline 250mg</div><div class="hrow-val">8 bo&#238;tes</div><span class="bk bk-warn">Bas</span></div>
+        <div class="hrow"><div class="hrow-ic" style="background:rgba(201,168,76,.1)">$</div><div class="hrow-lbl">Cr&#233;dits patients</div><div class="hrow-val">3 dossiers</div><span class="bk bk-gold">125K</span></div>
+        <div class="hrow"><div class="hrow-ic" style="background:rgba(11,61,46,.08)">*</div><div class="hrow-lbl">Ventes aujourd'hui</div><div class="hrow-val">28 ordonnances</div><span class="bk bk-ok">+12%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="logos-bar">
+  <span class="logos-lbl">Paiement</span>
+  <div class="pill">Wave</div><div class="pill">Orange Money</div><div class="pill">Carte bancaire</div>
+  <span class="logos-lbl" style="margin-left:10px">Plateforme</span>
+  <div class="pill">Web</div><div class="pill">Mobile PWA</div>
+</div>
+
+<div class="stats fade">
+  <div><div class="stat-v">50<span class="stat-u">+</span></div><div class="stat-l">Pharmacies actives</div></div>
+  <div><div class="stat-v">99<span class="stat-u">%</span></div><div class="stat-l">Disponibilit&#233;</div></div>
+  <div><div class="stat-v">30<span class="stat-u">s</span></div><div class="stat-l">Synchronisation</div></div>
+  <div><div class="stat-v">5<span class="stat-u">&#9733;</span></div><div class="stat-l">Note clients</div></div>
+</div>
+
+<section id="features">
+  <div class="fade">
+    <div class="sec-badge">Fonctionnalit&#233;s</div>
+    <h2>Tout ce dont votre<br>pharmacie a besoin</h2>
+    <p class="sec-sub">Une solution compl&#232;te pens&#233;e pour les pharmacies au S&#233;n&#233;gal.</p>
+  </div>
+  <div class="feat-grid fade">
+    <div class="feat"><div class="feat-ic">&#128230;</div><h3>Gestion des stocks</h3><p>Alertes p&#233;remption et rupture, num&#233;ros de lot, historique complet.</p></div>
+    <div class="feat"><div class="feat-ic">&#128176;</div><h3>Caisse journali&#232;re</h3><p>Recettes et d&#233;penses en temps r&#233;el. Graphiques 30 jours. Export CSV.</p></div>
+    <div class="feat"><div class="feat-ic">&#128138;</div><h3>Ordonnances &amp; Ventes</h3><p>Registre complet : patient, m&#233;decin, m&#233;dicaments, paiement.</p></div>
+    <div class="feat"><div class="feat-ic">&#128179;</div><h3>Cr&#233;dits patients</h3><p>Suivez les impay&#233;s, relances WhatsApp en 1 clic, historique remboursements.</p></div>
+    <div class="feat"><div class="feat-ic">&#127981;</div><h3>Carnet fournisseurs</h3><p>Centralisez vos fournisseurs. Alertes de commande WhatsApp automatiques.</p></div>
+    <div class="feat"><div class="feat-ic">&#128101;</div><h3>Multi-utilisateurs</h3><p>Administrateur, pharmacien, comptable &#8212; r&#244;les diff&#233;renci&#233;s, journal d'audit.</p></div>
+    <div class="feat"><div class="feat-ic">&#127973;</div><h3>Multi-succursales</h3><p>G&#233;rez plusieurs points de vente. Donn&#233;es isol&#233;es par pharmacie.</p></div>
+    <div class="feat"><div class="feat-ic">&#127991;</div><h3>&#201;tiquettes m&#233;dicaments</h3><p>Impression avec nom, prix, p&#233;remption, lot. Aper&#231;u avant impression.</p></div>
+    <div class="feat"><div class="feat-ic">&#128242;</div><h3>PWA installable</h3><p>Fonctionne hors ligne. Installable sur mobile et desktop.</p></div>
+  </div>
+</section>
+
+<section id="pricing" class="pricing-bg">
+  <div class="fade">
+    <div class="sec-badge">Tarifs</div>
+    <h2>Simple, transparent,<br>sans engagement</h2>
+    <p class="sec-sub">30 jours d'essai gratuit. R&#233;siliez &#224; tout moment. Paiement Wave ou Orange Money.</p>
+  </div>
+  <div class="plan-grid fade">
+    <div class="plan">
+      <div class="plan-name">Starter</div><div class="plan-price">15 000</div><div class="plan-period">FCFA / mois</div>
+      <ul class="plan-feats"><li class="pf">1 utilisateur</li><li class="pf">Stocks &amp; alertes</li><li class="pf">Caisse journali&#232;re</li><li class="pf">Ordonnances</li><li class="pf">Export CSV / PDF</li><li class="pf">Support WhatsApp</li></ul>
+      <button class="plan-btn plan-btn-ol" onclick="showModal('Starter')">Commencer</button>
+    </div>
+    <div class="plan pop">
+      <div class="pop-badge">Le plus populaire</div>
+      <div class="plan-name">Professionnel</div><div class="plan-price">29 000</div><div class="plan-period">FCFA / mois</div>
+      <ul class="plan-feats"><li class="pf">5 utilisateurs</li><li class="pf">Tout Starter inclus</li><li class="pf">Cr&#233;dits patients</li><li class="pf">Fournisseurs</li><li class="pf">Alertes WhatsApp auto</li><li class="pf">&#201;tiquettes m&#233;dicaments</li><li class="pf">Dashboard analytics 30j</li></ul>
+      <button class="plan-btn plan-btn-solid" onclick="showModal('Professionnel')">Commencer</button>
+    </div>
+    <div class="plan">
+      <div class="plan-name">Entreprise</div><div class="plan-price">55 000</div><div class="plan-period">FCFA / mois</div>
+      <ul class="plan-feats"><li class="pf">Utilisateurs illimit&#233;s</li><li class="pf">Tout Pro inclus</li><li class="pf">Multi-succursales</li><li class="pf">API &amp; int&#233;grations</li><li class="pf">Formation sur site</li><li class="pf">Support prioritaire 24/7</li></ul>
+      <button class="plan-btn plan-btn-ol" onclick="showModal('Entreprise')">Nous contacter</button>
+    </div>
+  </div>
+</section>
+
+<section id="testi">
+  <div class="fade">
+    <div class="sec-badge">T&#233;moignages</div>
+    <h2>Ils nous font confiance</h2>
+    <p class="sec-sub">Des pharmaciens de tout le S&#233;n&#233;gal utilisent PharmaGest chaque jour.</p>
+  </div>
+  <div class="testi-grid fade">
+    <div class="testi"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="testi-q">Avant j&#8217;utilisais des cahiers et Excel. Maintenant je vois mon stock en temps r&#233;el et je re&#231;ois des alertes avant d&#8217;&#234;tre en rupture. Indispensable.</p><div class="testi-who"><div class="testi-av">AD</div><div><div class="testi-name">Dr. Aminata Diallo</div><div class="testi-role">Pharmacie Centrale, Thi&#232;s</div></div></div></div>
+    <div class="testi"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="testi-q">La fonction cr&#233;dits patients est exceptionnelle. Je suis mes impay&#233;s et j&#8217;envoie des relances WhatsApp en un clic. Mes recouvrements ont augment&#233; de 40%.</p><div class="testi-who"><div class="testi-av">MS</div><div><div class="testi-name">Dr. Moussa Sow</div><div class="testi-role">Pharmacie du March&#233;, Dakar</div></div></div></div>
+    <div class="testi"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div><p class="testi-q">L&#8217;installation a pris 5 minutes. Mon &#233;quipe l&#8217;a pris en main imm&#233;diatement. Le support WhatsApp est tr&#232;s r&#233;actif. Je recommande &#224; tous mes confr&#232;res.</p><div class="testi-who"><div class="testi-av">FK</div><div><div class="testi-name">Dr. Fatou Konat&#233;</div><div class="testi-role">PharmaPlus, Saint-Louis</div></div></div></div>
+  </div>
+</section>
+
+<div class="cta-wrap fade">
+  <h2>Pr&#234;t &#224; moderniser votre pharmacie&#160;?</h2>
+  <p>30 jours gratuits &#183; Sans carte bancaire &#183; Sans engagement &#183; Support WhatsApp inclus</p>
+  <div class="cta-btns">
+    <a href="#" class="btn-gold" onclick="showModal();return false">D&#233;marrer maintenant &#8212; Gratuit 30 jours</a>
+    <a href="https://wa.me/221770000000" target="_blank" class="btn-wa">Demander une d&#233;mo</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-g">
+    <div><div class="footer-brand">PharmaGest</div><p class="footer-desc">Le logiciel de gestion pour pharmacies au S&#233;n&#233;gal.</p></div>
+    <div><div class="f-title">Produit</div><ul class="f-links"><li><a href="#features">Fonctionnalit&#233;s</a></li><li><a href="#pricing">Tarifs</a></li><li><a href="#" onclick="showModal();return false">Essai gratuit</a></li><li><a href="./app/index.html">Connexion</a></li></ul></div>
+    <div><div class="f-title">Support</div><ul class="f-links"><li><a href="https://wa.me/221770000000" target="_blank">WhatsApp</a></li><li><a href="/cdn-cgi/l/email-protection#2f4c40415b4e4c5b6f5f474e5d424e484a5c5b015c41">Email</a></li></ul></div>
+    <div><div class="f-title">L&#233;gal</div><ul class="f-links"><li><a href="#">CGU</a></li><li><a href="#">Confidentialit&#233;</a></li><li><a href="#">Mentions l&#233;gales</a></li></ul></div>
+  </div>
+  <div class="footer-bot"><span>&#169; 2026 PharmaGest &#183; S&#233;n&#233;gal</span><span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="791a16170d181a0d390911180b14181e1c0a0d570a17">[email&#160;protected]</a></span></div>
+</footer>
+
+<div class="modal-ovl" id="regModal" onclick="if(event.target===this)hideModal()">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <button class="modal-close-btn" onclick="hideModal()">&#10005;</button>
+      <h3>Cr&#233;er votre compte</h3>
+      <p>30 jours gratuits &#183; Aucune carte requise &#183; Pr&#234;t en 5 min</p>
+    </div>
+    <div class="modal-bd" id="regBody">
+      <div class="f-2">
+        <div class="f-row"><label>Nom de la pharmacie *</label><input id="rNom" type="text" placeholder="Pharmacie Centrale"></div>
+        <div class="f-row"><label>Ville *</label><input id="rVille" type="text" placeholder="Dakar, Thi&#232;s..."></div>
+      </div>
+      <div class="f-2">
+        <div class="f-row"><label>Votre nom *</label><input id="rContact" type="text" placeholder="Dr. Pr&#233;nom Nom"></div>
+        <div class="f-row"><label>T&#233;l&#233;phone *</label><input id="rTel" type="tel" placeholder="+221 77 XXX XX XX"></div>
+      </div>
+      <div class="f-row"><label>Email *</label><input id="rEmail" type="email" placeholder="contact@pharmacie.sn"></div>
+      <div class="f-row">
+        <label>Votre plan</label>
+        <div class="plan-radios">
+          <div class="pr"><input type="radio" name="rp" id="rpS" value="Starter"><label for="rpS"><span class="pr-name">Starter</span><span class="pr-price">15 000</span><span class="pr-per">FCFA/mois</span></label></div>
+          <div class="pr"><input type="radio" name="rp" id="rpP" value="Professionnel" checked><label for="rpP"><span class="pr-name">Pro &#9733;</span><span class="pr-price">29 000</span><span class="pr-per">FCFA/mois</span></label></div>
+          <div class="pr"><input type="radio" name="rp" id="rpE" value="Entreprise"><label for="rpE"><span class="pr-name">Entreprise</span><span class="pr-price">55 000</span><span class="pr-per">FCFA/mois</span></label></div>
+        </div>
+      </div>
+      <div class="f-row">
+        <label>Mode de paiement (apr&#232;s essai)</label>
+        <div class="pay-row">
+          <button type="button" class="pay-opt sel" onclick="selPay(this,'Wave')">Wave</button>
+          <button type="button" class="pay-opt" onclick="selPay(this,'Orange Money')">Orange Money</button>
+          <button type="button" class="pay-opt" onclick="selPay(this,'Carte')">Carte</button>
+        </div>
+      </div>
+      <button class="submit-btn" id="regBtn" onclick="submitReg()">Cr&#233;er mon compte gratuit</button>
+      <p class="f-note">En cr&#233;ant un compte vous acceptez nos <a href="#" style="color:var(--jade)">CGU</a>.</p>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var SUPA_URL = 'https://tmshposkrebpwhtuxfaf.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwbGl2em1maXd6dHNib3JmYnZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NTQyMTAsImV4cCI6MjA4NzQzMDIxMH0.JRQUIS3IKAKYr5MSZTaY7-kKPBalkHeZOWnmc-rObbA';
+
+function showModal(plan) {
+  document.getElementById('regModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (plan) {
+    var m = {Starter:'rpS', Professionnel:'rpP', Entreprise:'rpE'};
+    if (m[plan]) document.getElementById(m[plan]).checked = true;
+  }
+}
+
+function hideModal() {
+  document.getElementById('regModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+var payMethod = 'Wave';
+function selPay(btn, m) {
+  document.querySelectorAll('.pay-opt').forEach(function(b) { b.classList.remove('sel'); });
+  btn.classList.add('sel');
+  payMethod = m;
+}
+
+async function submitReg() {
+  var nom     = document.getElementById('rNom').value.trim();
+  var ville   = document.getElementById('rVille').value.trim();
+  var contact = document.getElementById('rContact').value.trim();
+  var tel     = document.getElementById('rTel').value.trim();
+  var email   = document.getElementById('rEmail').value.trim();
+
+  if (!nom || !contact || !tel || !email) {
+    alert('Merci de remplir tous les champs obligatoires.');
+    return;
+  }
+
+  var planEl = document.querySelector('input[name="rp"]:checked');
+  var plan   = planEl ? planEl.value : 'Professionnel';
+  var btn    = document.getElementById('regBtn');
+  btn.disabled    = true;
+  btn.textContent = 'Creation en cours...';
+
+  var ph_id = 'ph_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+  var payload = {
+    id: ph_id, nom: nom, ville: ville, contact: contact,
+    tel: tel, email: email, plan: plan, paiement: payMethod,
+    statut: 'trial',
+    trial_end:  new Date(Date.now() + 30 * 864e5).toISOString(),
+    created_at: new Date().toISOString()
+  };
+
+  var ok = false;
+  try {
+    var r = await fetch(SUPA_URL + '/rest/v1/pharmacies', {
+      method: 'POST',
+      headers: {
+        'apikey':        SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY,
+        'Content-Type':  'application/json',
+        'Prefer':        'return=representation'
+      },
+      body: JSON.stringify(payload)
+    });
+    ok = r.ok;
+    if (!ok) console.warn('Supabase:', await r.text());
+  } catch(e) {
+    console.warn('Erreur reseau:', e.message);
+  }
+
+  var ico   = ok ? '&#127881;' : '&#9989;';
+  var titre = ok ? 'Bienvenue sur PharmaGest !' : 'Demande recue !';
+  var corps = ok
+    ? 'Votre espace <strong>' + nom + '</strong> est pret.<br><br>Identifiant : <code>' + ph_id + '</code><br><br>Essai gratuit de 30 jours demarre.'
+    : 'Merci <strong>' + contact + '</strong> ! Nous creons votre espace pour <strong>' + nom + '</strong> et vous contactons sur <strong>' + tel + '</strong> dans les 2h.';
+  var lien  = ok
+    ? '<a href="./app/index.html?ph=' + ph_id + '" style="display:inline-block;margin-top:18px;background:var(--jade);color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600">Acceder a mon espace</a>'
+    : '<a href="https://wa.me/221770000000" target="_blank" style="display:inline-block;margin-top:18px;background:#25D366;color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600">Nous ecrire sur WhatsApp</a>';
+
+  document.getElementById('regBody').innerHTML =
+    '<div class="success"><div class="ico">' + ico + '</div>' +
+    '<h4>' + titre + '</h4>' +
+    '<p>' + corps + '</p>' +
+    lien + '</div>';
+}
+
+window.addEventListener('scroll', function() {
+  document.getElementById('navbar').style.boxShadow =
+    window.scrollY > 20 ? '0 4px 18px rgba(0,0,0,.08)' : 'none';
+});
+
+// Scroll animations
+document.querySelectorAll('.fade').forEach(el =>
+  new IntersectionObserver(([e]) => { if(e.isIntersecting) el.classList.add('in'); }, {threshold:.1}).observe(el)
+);;

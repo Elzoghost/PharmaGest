@@ -1,0 +1,6 @@
+[functions.relance-trial]
+verify_jwt = false
+
+[functions.relance-trial.cron]
+# Lancer tous les jours à 09:00 UTC (10:00 Dakar)
+schedule = "0 9 * * *"
